@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#05070a">
+<meta name="description" content="Aleah Echo — an eight-track CDA swamp-pop story featuring main and alternate mixes.">
+<title>Aleah Echo — CDA Swamp Pop</title>
+<style>
+:root {
+  --bg:#05070a;
+  --panel:rgba(10,14,20,.92);
+  --panel-2:rgba(18,24,33,.88);
+  --line:rgba(255,255,255,.09);
+  --line-strong:rgba(255,255,255,.16);
+  --text:#f7f3ea;
+  --muted:#98a2af;
+  --blue:#23a9ff;
+  --green:#9bc85c;
+  --gold:#e7b45e;
+  --danger:#ff6f6f;
+  --shadow:0 34px 110px rgba(0,0,0,.62);
+  --radius:28px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  min-height:100vh;
+  color:var(--text);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  background:
+    radial-gradient(circle at 10% 0%,rgba(35,169,255,.13),transparent 30%),
+    radial-gradient(circle at 88% 8%,rgba(155,200,92,.09),transparent 26%),
+    radial-gradient(circle at 48% 110%,rgba(231,180,94,.08),transparent 30%),
+    linear-gradient(180deg,#090c11,#040609 70%,#020304);
+  background-attachment:fixed;
+}
+button,input{font:inherit}
+button{cursor:pointer}
+.shell{width:min(1260px,94vw);margin:0 auto;padding:28px 0 54px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:20px}
+.brand{display:flex;align-items:center;gap:13px}
+.logo{
+  width:48px;height:48px;border-radius:16px;display:grid;place-items:center;
+  border:1px solid var(--line);background:linear-gradient(135deg,rgba(231,180,94,.16),rgba(35,169,255,.14));
+  box-shadow:inset 0 0 28px rgba(255,255,255,.03)
+}
+.logo svg{width:28px;height:28px}
+.brand h1{margin:0;font-size:14px;letter-spacing:.24em;text-transform:uppercase}
+.brand p{margin:4px 0 0;color:var(--muted);font-size:12px}
+.topActions{display:flex;align-items:center;gap:10px}
+.badge,.ghostBtn{
+  border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.025);
+  color:var(--muted);padding:9px 13px;font-size:12px
+}
+.ghostBtn:hover{color:var(--text);border-color:var(--line-strong)}
+.player{
+  overflow:hidden;border:1px solid var(--line);border-radius:var(--radius);
+  background:linear-gradient(145deg,rgba(18,24,33,.97),rgba(5,7,10,.97));
+  box-shadow:var(--shadow)
+}
+.main{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(390px,.92fr);min-height:720px}
+.visual{position:relative;min-height:720px;overflow:hidden;background:#07090d}
+.cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .45s ease,transform 8s ease,filter .45s ease}
+.visual.playing .cover{transform:scale(1.045);filter:saturate(1.06) contrast(1.03)}
+.veil{position:absolute;inset:0;background:
+  linear-gradient(90deg,transparent 55%,rgba(4,6,9,.72) 84%,rgba(4,6,9,.98)),
+  linear-gradient(180deg,transparent 52%,rgba(4,6,9,.72))
+}
+.glow{position:absolute;inset:-18%;background:radial-gradient(circle at 53% 54%,rgba(35,169,255,.15),transparent 24%);mix-blend-mode:screen;animation:drift 10s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translate3d(7%,-5%,0) scale(1.09)}}
+.coverBadge{position:absolute;left:24px;bottom:22px;z-index:2;border:1px solid var(--line);border-radius:999px;padding:8px 11px;background:rgba(5,7,10,.58);backdrop-filter:blur(14px);font-size:11px;color:#d9e4ef;letter-spacing:.08em}
+.side{padding:34px;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(8,11,16,.58),rgba(5,7,10,.98))}
+.eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+h2{font-size:clamp(38px,4.4vw,66px);line-height:.94;letter-spacing:-.055em;margin:18px 0 8px}
+.mixLine{display:flex;gap:8px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px}
+.mixPill{border:1px solid rgba(231,180,94,.24);color:#f0cc88;border-radius:999px;padding:5px 8px;background:rgba(231,180,94,.06);font-size:11px}
+.wavebox{margin:30px 0 16px;border:1px solid var(--line);border-radius:22px;padding:16px;background:linear-gradient(180deg,rgba(255,255,255,.038),rgba(255,255,255,.012))}
+svg{display:block}
+#waveSvg{width:100%;height:122px}
+.wave{fill:none;stroke:url(#grad);stroke-width:2.5;filter:url(#waveGlow)}
+.ghost{fill:none;stroke:rgba(255,255,255,.08);stroke-width:1}
+.dot{fill:#fff4df;filter:url(#waveGlow)}
+.seek{width:100%;appearance:none;height:5px;border-radius:999px;background:linear-gradient(90deg,var(--gold) var(--p,0%),rgba(255,255,255,.12) var(--p,0%));outline:none;cursor:pointer}
+.seek::-webkit-slider-thumb{appearance:none;width:16px;height:16px;border-radius:50%;background:#fff4df;box-shadow:0 0 0 5px rgba(231,180,94,.13)}
+.time{display:flex;justify-content:space-between;margin-top:8px;color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
+.controls{display:flex;justify-content:center;align-items:center;gap:12px;margin:10px 0 18px}
+.controlBtn{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.055);border:1px solid var(--line);color:var(--text);transition:.2s}
+.controlBtn:hover{transform:translateY(-2px);background:rgba(255,255,255,.09)}
+.controlBtn.active{color:var(--gold);border-color:rgba(231,180,94,.35);background:rgba(231,180,94,.08)}
+.playBtn{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;border:0;background:linear-gradient(135deg,var(--gold),#f1d892);color:#111;box-shadow:0 14px 38px rgba(231,180,94,.24);font-size:26px;transition:.2s}
+.playBtn:hover{transform:scale(1.04)}
+.audioRow{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;margin-top:3px;color:var(--muted);font-size:11px}
+.volume{width:100%;accent-color:var(--blue)}
+.tags{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:15px}
+.tag{border:1px solid var(--line);border-radius:999px;padding:7px 10px;color:var(--muted);font-size:11px}
+.queue{margin-top:26px;padding-top:18px;border-top:1px solid var(--line)}
+.queueHeader{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.qlabel{font-size:11px;color:var(--muted);letter-spacing:.18em;text-transform:uppercase}
+.count{font-size:11px;color:#7d8794}
+.trackList{display:grid;gap:7px;max-height:350px;overflow:auto;padding-right:4px}
+.trackList::-webkit-scrollbar{width:8px}
+.trackList::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:999px}
+.track{
+  display:grid;grid-template-columns:38px 58px minmax(0,1fr) auto;align-items:center;gap:11px;
+  padding:10px;border-radius:16px;border:1px solid transparent;background:transparent;color:var(--text);
+  text-align:left;transition:.2s
+}
+.track:hover{background:rgba(255,255,255,.04)}
+.track.active{background:linear-gradient(90deg,rgba(35,169,255,.095),rgba(255,255,255,.025));border-color:rgba(35,169,255,.28)}
+.num{font-size:11px;color:#77818d;font-variant-numeric:tabular-nums}
+.thumb{width:58px;height:58px;border-radius:12px;object-fit:cover;border:1px solid var(--line)}
+.trackMeta{min-width:0}
+.trackMeta h3{font-size:14px;margin:0 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trackMeta p{font-size:12px;color:var(--muted);margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.eq{display:flex;gap:3px;align-items:flex-end;height:18px}
+.eq span{width:3px;height:5px;border-radius:3px;background:linear-gradient(var(--blue),var(--green));animation:eq .85s ease-in-out infinite alternate;animation-play-state:paused}
+.eq span:nth-child(2){animation-delay:.12s} .eq span:nth-child(3){animation-delay:.24s}
+.playingNow .track.active .eq span{animation-play-state:running}
+@keyframes eq{to{height:18px}}
+.error{margin-top:12px;border:1px solid rgba(255,111,111,.28);background:rgba(255,111,111,.07);color:#ffc0c0;border-radius:14px;padding:10px 12px;font-size:12px;display:none}
+.footer{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-top:14px;color:#727b87;font-size:11px}
+.footer code{color:#aeb7c2}
+@media(max-width:960px){
+  .main{grid-template-columns:1fr}
+  .visual{min-height:58vh}
+  .veil{background:linear-gradient(180deg,transparent 45%,rgba(4,6,9,.96))}
+  .side{padding:26px 20px}
+  .trackList{max-height:none}
+}
+@media(max-width:620px){
+  body{padding-top:0}
+  .shell{width:100%;padding:0 0 28px}
+  .topbar{padding:16px 16px 0}
+  .badge{display:none}
+  .player{border-radius:0;border-left:0;border-right:0}
+  .visual{min-height:56vh}
+  .side{padding:22px 16px}
+  h2{font-size:43px}
+  .track{grid-template-columns:28px 52px minmax(0,1fr) auto;padding:8px}
+  .thumb{width:52px;height:52px}
+  .footer{padding:0 16px;flex-direction:column;align-items:flex-start}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 40 40">
+          <path d="M7 27 C13 12,27 12,33 27" fill="none" stroke="#e7b45e" stroke-width="2.4" stroke-linecap="round"/>
+          <path d="M10 30 H30" fill="none" stroke="#23a9ff" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div><h1>Aleah Echo</h1><p>CDA swamp-pop • eight-track birthday story</p></div>
+    </div>
+    <div class="topActions">
+      <button class="ghostBtn" id="copyLink">Copy page link</button>
+      <div class="badge">GitHub Pages ready</div>
+    </div>
+  </header>
+
+  <main class="player">
+    <div class="main">
+      <section class="visual" id="visual" aria-label="Current track artwork">
+        <img id="cover" class="cover" src="still_here_still_wild.png" alt="">
+        <div class="glow"></div>
+        <div class="veil"></div>
+        <div class="coverBadge" id="coverBadge">01 / 08</div>
+      </section>
+
+      <section class="side">
+        <div class="eyebrow">Now playing</div>
+        <h2 id="title">Still Here, Still Wild</h2>
+        <div class="mixLine">
+          <span id="story">Reflective half-time anthem</span>
+          <span class="mixPill" id="mixPill">Main Mix</span>
+        </div>
+
+        <div class="wavebox">
+          <svg id="waveSvg" viewBox="0 0 640 120" preserveAspectRatio="none" aria-label="Reactive audio waveform">
+            <defs>
+              <linearGradient id="grad">
+                <stop offset="0%" stop-color="#e7b45e"/>
+                <stop offset="48%" stop-color="#23a9ff"/>
+                <stop offset="100%" stop-color="#9bc85c"/>
+              </linearGradient>
+              <filter id="waveGlow">
+                <feGaussianBlur stdDeviation="3" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+            <path class="ghost" d="M0 60 C80 25 160 95 240 60 S400 25 480 60 S560 95 640 60"/>
+            <path class="wave" id="wave" d="M0 60 C80 25 160 95 240 60 S400 25 480 60 S560 95 640 60"/>
+            <circle class="dot" id="dot" cx="0" cy="60" r="3.5"/>
+          </svg>
+          <input id="seek" class="seek" type="range" min="0" max="1000" value="0" aria-label="Seek">
+          <div class="time"><span id="now">0:00</span><span id="dur">0:00</span></div>
+        </div>
+
+        <div class="controls">
+          <button class="controlBtn" id="shuffle" aria-label="Shuffle">⤨</button>
+          <button class="controlBtn" id="prev" aria-label="Previous track">⏮</button>
+          <button class="playBtn" id="play" aria-label="Play or pause">▶</button>
+          <button class="controlBtn" id="next" aria-label="Next track">⏭</button>
+          <button class="controlBtn" id="repeat" aria-label="Repeat">↻</button>
+        </div>
+
+        <div class="audioRow">
+          <span>🔈</span>
+          <input id="volume" class="volume" type="range" min="0" max="1" step="0.01" value="0.88" aria-label="Volume">
+          <span id="volumeText">88%</span>
+        </div>
+
+        <div class="tags">
+          <span class="tag">Female lead</span>
+          <span class="tag">Half-time swagger</span>
+          <span class="tag">CDA swamp-pop</span>
+          <span class="tag">Animated SVG</span>
+        </div>
+
+        <div class="error" id="error"></div>
+
+        <div class="queue">
+          <div class="queueHeader"><div class="qlabel">Full Echo sequence</div><div class="count">8 tracks • 4 songs</div></div>
+          <div id="trackList" class="trackList"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <span>Built for Aleah • Coeur d’Alene, Idaho</span>
+    <span>Keep <code>index.html</code>, all MP3s, and all PNGs in the same repository folder.</span>
+  </footer>
+</div>
+
+<audio id="audio" preload="metadata"></audio>
+
+<script>
+const tracks = [{"title": "Still Here, Still Wild", "mix": "Main Mix", "src": "still_here_still_wild.mp3", "cover": "still_here_still_wild.png", "story": "Reflective half-time anthem", "number": "01"}, {"title": "Still Here, Still Wild", "mix": "Alternate Mix", "src": "still_here_still_wild_alt.mp3", "cover": "still_here_still_wild.png", "story": "Alternate performance", "number": "02"}, {"title": "Kick the Current", "mix": "Main Mix", "src": "kick_the_current.mp3", "cover": "kick_the_current.png", "story": "Run and ride energy", "number": "03"}, {"title": "Kick the Current", "mix": "Alternate Mix", "src": "kick_the_current_alt.mp3", "cover": "kick_the_current.png", "story": "Alternate performance", "number": "04"}, {"title": "Backroads Don’t Lie", "mix": "Main Mix", "src": "backroads_dont_lie.mp3", "cover": "backroads_dont_lie.png", "story": "Stubborn road-song swagger", "number": "05"}, {"title": "Backroads Don’t Lie", "mix": "Alternate Mix", "src": "backroads_dont_lie_alt.mp3", "cover": "backroads_dont_lie.png", "story": "Alternate performance", "number": "06"}, {"title": "Lake in My Blood", "mix": "Main Mix", "src": "lake_in_my_blood.mp3", "cover": "lake_in_my_blood.png", "story": "Home, dogs, water and memory", "number": "07"}, {"title": "Lake in My Blood", "mix": "Alternate Mix", "src": "lake_in_my_blood_alt.mp3", "cover": "lake_in_my_blood.png", "story": "Alternate performance", "number": "08"}];
+
+let index = 0;
+let isShuffle = false;
+let repeatMode = 0; // 0 off, 1 all, 2 one
+let audioContext, analyser, sourceNode, frequencyData;
+let lastLoadedSrc = "";
+
+const audio = document.getElementById("audio");
+const cover = document.getElementById("cover");
+const visual = document.getElementById("visual");
+const title = document.getElementById("title");
+const story = document.getElementById("story");
+const mixPill = document.getElementById("mixPill");
+const coverBadge = document.getElementById("coverBadge");
+const seek = document.getElementById("seek");
+const now = document.getElementById("now");
+const dur = document.getElementById("dur");
+const wave = document.getElementById("wave");
+const dot = document.getElementById("dot");
+const playButton = document.getElementById("play");
+const errorBox = document.getElementById("error");
+const trackList = document.getElementById("trackList");
+
+function formatTime(seconds) {
+  if (!Number.isFinite(seconds)) return "0:00";
+  const minutes = Math.floor(seconds / 60);
+  const remaining = Math.floor(seconds % 60).toString().padStart(2, "0");
+  return `${minutes}:${remaining}`;
+}
+
+function setError(message = "") {
+  errorBox.textContent = message;
+  errorBox.style.display = message ? "block" : "none";
+}
+
+function renderTrackList() {
+  trackList.innerHTML = "";
+  tracks.forEach((track, i) => {
+    const button = document.createElement("button");
+    button.className = "track" + (i === index ? " active" : "");
+    button.type = "button";
+    button.setAttribute("aria-label", `Play ${track.title} — ${track.mix}`);
+    button.innerHTML = `
+      <span class="num">${track.number}</span>
+      <img class="thumb" src="${track.cover}" alt="">
+      <span class="trackMeta">
+        <h3>${track.title}</h3>
+        <p>${track.mix} • ${track.story}</p>
+      </span>
+      <span class="eq" aria-hidden="true"><span></span><span></span><span></span></span>
+    `;
+    button.addEventListener("click", () => {
+      index = i;
+      loadTrack(true);
+    });
+    trackList.appendChild(button);
+  });
+}
+
+function updateMediaSession(track) {
+  if (!("mediaSession" in navigator)) return;
+  try {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: track.title,
+      artist: "Aleah Echo",
+      album: "Still Here, Still Wild",
+      artwork: [
+        { src: track.cover, sizes: "512x512", type: "image/png" }
+      ]
+    });
+  } catch (error) {}
+}
+
+function loadTrack(autoplay = false) {
+  const track = tracks[index];
+  setError("");
+  cover.src = track.cover;
+  cover.alt = `${track.title} cover artwork`;
+  title.textContent = track.title;
+  story.textContent = track.story;
+  mixPill.textContent = track.mix;
+  coverBadge.textContent = `${track.number} / 08`;
+  seek.value = 0;
+  seek.style.setProperty("--p", "0%");
+  now.textContent = "0:00";
+  dur.textContent = "0:00";
+
+  if (lastLoadedSrc !== track.src) {
+    audio.src = track.src;
+    lastLoadedSrc = track.src;
+  }
+
+  renderTrackList();
+  updateMediaSession(track);
+
+  if (autoplay) {
+    audio.play().catch(() => {
+      setError(`Could not play "${track.src}". Confirm the file is uploaded beside index.html and that the filename matches exactly.`);
+    });
+  }
+}
+
+function initializeAudioGraph() {
+  if (audioContext) return;
+  const Context = window.AudioContext || window.webkitAudioContext;
+  if (!Context) return;
+  audioContext = new Context();
+  analyser = audioContext.createAnalyser();
+  analyser.fftSize = 128;
+  analyser.smoothingTimeConstant = 0.82;
+  sourceNode = audioContext.createMediaElementSource(audio);
+  sourceNode.connect(analyser);
+  analyser.connect(audioContext.destination);
+  frequencyData = new Uint8Array(analyser.frequencyBinCount);
+}
+
+function nextIndex() {
+  if (isShuffle) {
+    if (tracks.length < 2) return index;
+    let candidate = index;
+    while (candidate === index) candidate = Math.floor(Math.random() * tracks.length);
+    return candidate;
+  }
+  return (index + 1) % tracks.length;
+}
+
+function previousIndex() {
+  return (index + tracks.length - 1) % tracks.length;
+}
+
+playButton.addEventListener("click", async () => {
+  initializeAudioGraph();
+  if (audioContext?.state === "suspended") await audioContext.resume();
+  if (audio.paused) {
+    audio.play().catch(() => setError(`Could not play "${tracks[index].src}". Check that the file exists and matches the exact lowercase filename.`));
+  } else {
+    audio.pause();
+  }
+});
+
+document.getElementById("prev").addEventListener("click", () => {
+  index = previousIndex();
+  loadTrack(true);
+});
+
+document.getElementById("next").addEventListener("click", () => {
+  index = nextIndex();
+  loadTrack(true);
+});
+
+document.getElementById("shuffle").addEventListener("click", (event) => {
+  isShuffle = !isShuffle;
+  event.currentTarget.classList.toggle("active", isShuffle);
+  event.currentTarget.setAttribute("aria-pressed", String(isShuffle));
+});
+
+document.getElementById("repeat").addEventListener("click", (event) => {
+  repeatMode = (repeatMode + 1) % 3;
+  event.currentTarget.classList.toggle("active", repeatMode > 0);
+  event.currentTarget.textContent = repeatMode === 2 ? "↻¹" : "↻";
+  event.currentTarget.title = ["Repeat off", "Repeat all", "Repeat one"][repeatMode];
+});
+
+document.getElementById("volume").addEventListener("input", (event) => {
+  audio.volume = Number(event.target.value);
+  document.getElementById("volumeText").textContent = `${Math.round(audio.volume * 100)}%`;
+});
+
+seek.addEventListener("input", () => {
+  if (audio.duration) audio.currentTime = (Number(seek.value) / 1000) * audio.duration;
+});
+
+audio.addEventListener("play", () => {
+  playButton.textContent = "❚❚";
+  visual.classList.add("playing");
+  document.body.classList.add("playingNow");
+});
+
+audio.addEventListener("pause", () => {
+  playButton.textContent = "▶";
+  visual.classList.remove("playing");
+  document.body.classList.remove("playingNow");
+});
+
+audio.addEventListener("loadedmetadata", () => {
+  dur.textContent = formatTime(audio.duration);
+});
+
+audio.addEventListener("timeupdate", () => {
+  now.textContent = formatTime(audio.currentTime);
+  dur.textContent = formatTime(audio.duration);
+  const progress = audio.duration ? (audio.currentTime / audio.duration) * 1000 : 0;
+  seek.value = progress;
+  seek.style.setProperty("--p", `${progress / 10}%`);
+});
+
+audio.addEventListener("error", () => {
+  setError(`Audio file not found or unsupported: "${tracks[index].src}". GitHub Pages filenames are case-sensitive.`);
+});
+
+audio.addEventListener("ended", () => {
+  if (repeatMode === 2) {
+    audio.currentTime = 0;
+    audio.play();
+    return;
+  }
+  if (repeatMode === 0 && !isShuffle && index === tracks.length - 1) {
+    audio.pause();
+    audio.currentTime = 0;
+    return;
+  }
+  index = nextIndex();
+  loadTrack(true);
+});
+
+document.getElementById("copyLink").addEventListener("click", async (event) => {
+  try {
+    await navigator.clipboard.writeText(location.href);
+    const original = event.currentTarget.textContent;
+    event.currentTarget.textContent = "Link copied";
+    setTimeout(() => event.currentTarget.textContent = original, 1400);
+  } catch {
+    setError("Could not copy the link automatically. Copy it from the browser address bar.");
+  }
+});
+
+window.addEventListener("keydown", (event) => {
+  if (event.target.matches("input,button")) return;
+  if (event.code === "Space") {
+    event.preventDefault();
+    playButton.click();
+  }
+  if (event.code === "ArrowRight") {
+    audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 10);
+  }
+  if (event.code === "ArrowLeft") {
+    audio.currentTime = Math.max(0, audio.currentTime - 10);
+  }
+});
+
+if ("mediaSession" in navigator) {
+  navigator.mediaSession.setActionHandler("play", () => audio.play());
+  navigator.mediaSession.setActionHandler("pause", () => audio.pause());
+  navigator.mediaSession.setActionHandler("previoustrack", () => {
+    index = previousIndex();
+    loadTrack(true);
+  });
+  navigator.mediaSession.setActionHandler("nexttrack", () => {
+    index = nextIndex();
+    loadTrack(true);
+  });
+}
+
+function animateWave(timestamp) {
+  const points = [];
+  if (analyser && !audio.paused) analyser.getByteFrequencyData(frequencyData);
+
+  for (let i = 0; i <= 64; i++) {
+    const x = (i / 64) * 640;
+    const value = analyser && !audio.paused
+      ? frequencyData[Math.min(i, frequencyData.length - 1)] / 255
+      : (Math.sin(timestamp / 620 + i * 0.44) + 1) / 2;
+    const amplitude = 8 + value * 42;
+    const y = 60 + Math.sin(i * 0.56 + timestamp / 420) * amplitude * (0.45 + 0.55 * Math.sin(Math.PI * i / 64));
+    points.push([x, y]);
+  }
+
+  wave.setAttribute("d", points.map((point, i) => `${i ? "L" : "M"}${point[0].toFixed(1)} ${point[1].toFixed(1)}`).join(" "));
+
+  const position = audio.duration ? audio.currentTime / audio.duration : (timestamp / 8000) % 1;
+  const pointIndex = Math.min(points.length - 1, Math.floor(position * (points.length - 1)));
+  dot.setAttribute("cx", points[pointIndex][0]);
+  dot.setAttribute("cy", points[pointIndex][1]);
+
+  requestAnimationFrame(animateWave);
+}
+
+audio.volume = 0.88;
+renderTrackList();
+loadTrack(false);
+requestAnimationFrame(animateWave);
+</script>
+</body>
+</html>
