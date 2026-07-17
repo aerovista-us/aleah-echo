@@ -61,16 +61,17 @@ button{cursor:pointer}
   box-shadow:var(--shadow)
 }
 .main{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(390px,.92fr);min-height:720px}
-.visual{position:relative;min-height:720px;overflow:hidden;background:#07090d}
-.cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .45s ease,transform 8s ease,filter .45s ease}
+.visual{position:relative;min-height:720px;overflow:hidden;background:#07090d;isolation:isolate}
+.cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;transition:opacity .45s ease,transform 8s ease,filter .45s ease;z-index:1}
+.visual::before{content:"";position:absolute;inset:-3%;background-image:var(--art-bg);background-size:cover;background-position:center;filter:blur(28px) brightness(.42) saturate(1.05);transform:scale(1.08);z-index:0;opacity:.95}
 .visual.playing .cover{transform:scale(1.045);filter:saturate(1.06) contrast(1.03)}
-.veil{position:absolute;inset:0;background:
+.veil{position:absolute;inset:0;z-index:3;background:
   linear-gradient(90deg,transparent 55%,rgba(4,6,9,.72) 84%,rgba(4,6,9,.98)),
   linear-gradient(180deg,transparent 52%,rgba(4,6,9,.72))
 }
-.glow{position:absolute;inset:-18%;background:radial-gradient(circle at 53% 54%,rgba(35,169,255,.15),transparent 24%);mix-blend-mode:screen;animation:drift 10s ease-in-out infinite alternate}
+.glow{position:absolute;inset:-18%;background:radial-gradient(circle at 53% 54%,rgba(35,169,255,.15),transparent 24%);mix-blend-mode:screen;animation:drift 10s ease-in-out infinite alternate;z-index:2}
 @keyframes drift{to{transform:translate3d(7%,-5%,0) scale(1.09)}}
-.coverBadge{position:absolute;left:24px;bottom:22px;z-index:2;border:1px solid var(--line);border-radius:999px;padding:8px 11px;background:rgba(5,7,10,.58);backdrop-filter:blur(14px);font-size:11px;color:#d9e4ef;letter-spacing:.08em}
+.coverBadge{position:absolute;left:24px;bottom:22px;z-index:4;border:1px solid var(--line);border-radius:999px;padding:8px 11px;background:rgba(5,7,10,.58);backdrop-filter:blur(14px);font-size:11px;color:#d9e4ef;letter-spacing:.08em}
 .side{padding:34px;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(8,11,16,.58),rgba(5,7,10,.98))}
 .eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
 h2{font-size:clamp(38px,4.4vw,66px);line-height:.94;letter-spacing:-.055em;margin:18px 0 8px}
@@ -124,8 +125,23 @@ svg{display:block}
 .footer code{color:#aeb7c2}
 @media(max-width:960px){
   .main{grid-template-columns:1fr}
-  .visual{min-height:58vh}
-  .veil{background:linear-gradient(180deg,transparent 45%,rgba(4,6,9,.96))}
+  .visual{
+    min-height:0;
+    aspect-ratio:1 / 1;
+    width:100%;
+    background:#07090d;
+  }
+  .cover{
+    object-fit:contain;
+    object-position:center;
+    transform:none !important;
+    padding:0;
+  }
+  .visual.playing .cover{transform:none}
+  .veil{
+    background:
+      linear-gradient(180deg,rgba(4,6,9,.04),rgba(4,6,9,.12) 72%,rgba(4,6,9,.76));
+  }
   .side{padding:26px 20px}
   .trackList{max-height:none}
 }
@@ -135,7 +151,17 @@ svg{display:block}
   .topbar{padding:16px 16px 0}
   .badge{display:none}
   .player{border-radius:0;border-left:0;border-right:0}
-  .visual{min-height:56vh}
+  .visual{
+    aspect-ratio:1 / 1;
+    min-height:0;
+    max-height:none;
+  }
+  .cover{
+    object-fit:contain;
+    width:100%;
+    height:100%;
+  }
+  .coverBadge{left:14px;bottom:12px}
   .side{padding:22px 16px}
   h2{font-size:43px}
   .track{grid-template-columns:28px 52px minmax(0,1fr) auto;padding:8px}
@@ -167,7 +193,7 @@ svg{display:block}
 
   <main class="player">
     <div class="main">
-      <section class="visual" id="visual" aria-label="Current track artwork">
+      <section class="visual" id="visual" aria-label="Current track artwork" style="--art-bg:url('still_here_still_wild.png')">
         <img id="cover" class="cover" src="still_here_still_wild.png" alt="">
         <div class="glow"></div>
         <div class="veil"></div>
@@ -321,6 +347,7 @@ function loadTrack(autoplay = false) {
   const track = tracks[index];
   setError("");
   cover.src = track.cover;
+  visual.style.setProperty("--art-bg", `url("${track.cover}")`);
   cover.alt = `${track.title} cover artwork`;
   title.textContent = track.title;
   story.textContent = track.story;
